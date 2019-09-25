@@ -18,25 +18,19 @@ class TestViews(TestCase):
 
     def test_products_read(self):
         print("\nTEST_PRODUCTS_READ", flush=True)
-        response = self.client.get("/api/v1/products", data={"name": "Socialive.tv"})
+        response = self.client.get("/api/v1/products/2")
         product = response.json
         print(response.status_code, flush=True)
         self.assertIsInstance(product, dict)
         self.assertEqual(product['id'], 2)
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get("/api/v1/products", data={"name": "toto"})
+        response = self.client.get("/api/v1/products/10")
         product = response.json
         print(response.status_code, flush=True)
         self.assertIsNone(product)
         #self.assertIsInstance(product, dict)
         self.assertEqual(response.status_code, 404)
-
-        response = self.client.get("/api/v1/products", data={"badkey": "_"})
-        product = response.json
-        print(response.status_code, flush=True)
-        self.assertIsNone(product)
-        self.assertEqual(response.status_code, 400)
 
     def test_product_create(self):
         print("\nTEST_PRODUCT_CREATE", flush=True)
@@ -50,7 +44,7 @@ class TestViews(TestCase):
 
     def test_product_update(self):
         print("\nTEST_PRODUCT_UPDATE", flush=True)
-        response = self.client.post("/api/v1/products/update", data={"id": 3, "name": "Star Trek"})
+        response = self.client.patch("/api/v1/products/3", data={"name": "Star Trek"})
         product = response.json
         print(response.status_code, flush=True)
         self.assertIsInstance(product, dict)
@@ -58,23 +52,23 @@ class TestViews(TestCase):
         self.assertEqual(product['name'], "Star Trek")
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post("/api/v1/products/update", data={"id": 10, "name": "bad id"})
+        response = self.client.patch("/api/v1/products/10", data={"name": "bad id"})
         product = response.json
         print(response.status_code, flush=True)
         self.assertIsNone(product)
-        self.assertEqual(response.status_code, 404)
-
-        response = self.client.post("/api/v1/products/update", data={"bad_key": 10, "bad_name": "bad name"})
-        product = response.json
-        print(response.status_code, flush=True)
-        self.assertIsNone(product)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 422)
 
     def test_product_delete(self):
         print("\nTEST_PRODUCT_DELETE", flush=True)
-        response = self.client.post("/api/v1/products/delete", data={"name": "Skello"})
+        response = self.client.delete("/api/v1/products/1")
         product = response.json
         print(response.status_code, flush=True)
         #self.assertIsInstance(product, dict)
         self.assertEqual(response.status_code, 204)
+
+        response = self.client.delete("/api/v1/products/10")
+        product = response.json
+        print(response.status_code, flush=True)
+        self.assertIsNone(product)
+        self.assertEqual(response.status_code, 422)
 

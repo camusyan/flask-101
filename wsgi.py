@@ -1,6 +1,6 @@
 # wsgi.py
 from flask import Flask
-from flask.json import jsonify
+from flask import jsonify
 from flask import request
 
 app = Flask(__name__)
@@ -32,20 +32,17 @@ def hello():
     return "Hello World!"
 
 @app.route('/api/v1/products', methods=['GET'])
-def products_read():
-    form = request.form
-    if len(form) == 0:
-        return jsonify(PRODUCTS), 200
-    elif 'name' in form.keys():
-        idx = get_product_index_from_name(form.get('name'))
-        if idx is not None:
-            id = PRODUCTS[idx].get('id')
-            name = PRODUCTS[idx].get('name')
-            return jsonify({'id': id, 'name': name}), 200
-        else:
-            return "", 404
+def products_read_all():
+    return jsonify(PRODUCTS), 200
+
+@app.route('/api/v1/products/<id>', methods=['GET'])
+def products_read(id):
+    idx = get_product_index_from_id(int(id))
+    if idx is not None:
+        name = PRODUCTS[idx].get('name')
+        return jsonify({'id': int(id), 'name': name}), 200
     else:
-        return "", 400
+        return "", 404
 
 @app.route('/api/v1/products', methods=['POST'])
 def products_create():
@@ -53,28 +50,26 @@ def products_create():
     PRODUCTS.append({'id': get_new_product_id(), 'name': product})
     return jsonify(PRODUCTS[-1]), 201
 
-@app.route('/api/v1/products/update', methods=['POST'])
-def products_update():
+@app.route('/api/v1/products/<id>', methods=['PATCH'])
+def products_update(id):
     form = request.form
-    if 'id' not in form.keys() or 'name' not in form.keys():
+
+    if 'name' not in form.keys():
         return "", 400
 
-    id = form.get('id')
     name = form.get('name')
-    idx = get_product_index_from_id(id)
+    idx = get_product_index_from_id(int(id))
     if idx is not None:
         PRODUCTS[idx]['name'] = name
         return jsonify(PRODUCTS[idx]), 200
     else:
-        return "", 404
+        return "", 422
 
-@app.route('/api/v1/products/delete', methods=['POST'])
-def products_delete():
-    product = request.form.get('name')
-    idx = get_product_index_from_name(product)
-
+@app.route('/api/v1/products/<id>', methods=['DELETE'])
+def products_delete(id):
+    idx = get_product_index_from_id(int(id))
     if idx is not None:
         del PRODUCTS[idx]
         return "", 204
 
-    return "", 404
+    return "", 422
