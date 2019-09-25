@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return "Hello World! 2"
+    return "Hello World!"
 
 @app.route('/api/v1/products')
 def products():
