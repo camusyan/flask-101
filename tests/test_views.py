@@ -12,3 +12,10 @@ class TestViews(TestCase):
         products = response.json
         self.assertIsInstance(products, list)
         self.assertGreater(len(products), 2) # 2 is not a mistake here.
+
+    def test_product_create(self):
+        response = self.client.post("/api/v1/products", data={"name": "Star Wars"})
+        product = response.json
+        self.assertIsInstance(product, dict)
+        self.assertEqual(product['id'], 4)
+        self.assertEqual(product['name'], "Star Wars")
