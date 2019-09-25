@@ -29,3 +29,14 @@ def products_create():
     product = request.form.get('name')
     PRODUCTS.append({'id': get_new_product_id(), 'name': product})
     return jsonify(PRODUCTS[-1])
+
+@app.route('/api/v1/products/update', methods=['POST'])
+def products_update():
+    id = request.form.get('id')
+    for idx in range(len(PRODUCTS)):
+        if PRODUCTS[idx].get('id') == id:
+            break
+    product = request.form.get('name')
+    PRODUCTS[idx]['name'] = product
+    return jsonify(PRODUCTS[idx])
+

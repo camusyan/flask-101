@@ -19,3 +19,10 @@ class TestViews(TestCase):
         self.assertIsInstance(product, dict)
         self.assertEqual(product['id'], 4)
         self.assertEqual(product['name'], "Star Wars")
+
+    def test_product_update(self):
+        response = self.client.post("/api/v1/products/update", data={"id": 4, "name": "Star Trek"})
+        product = response.json
+        self.assertIsInstance(product, dict)
+        self.assertEqual(product['id'], 4)
+        self.assertEqual(product['name'], "Star Trek")
